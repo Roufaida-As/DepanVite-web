@@ -23,6 +23,7 @@ export default function SignupPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Form submitted:', formData);
+    navigate('/depanage');
   };
 
   const handleLogin = () => {
