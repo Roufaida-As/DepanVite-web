@@ -1,25 +1,45 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import Sidebar, { SidebarItem } from './components/SideBar'
-import { Wrench, Users, Home, BarChart } from 'lucide-react'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import SignupPage from './pages/auth/SignupPage';
+import LoginPage from './pages/auth/LoginPage';
+import DepanagePage from './pages/DepanagePage';
+import AuthLayout from './layouts/AuthLayout';
+import MainLayout from './layouts/MainLayout';
 
 function App() {
   return (
-    <div className="flex h-screen w-screen">
-      {/* ✅ Sidebar is just called as a component */}
-      <Sidebar>
-        <SidebarItem icon={<Wrench size={30} />} text="Dépanneurs" />
-        <SidebarItem icon={<Users size={30} />} text="Assurés" />
-        <SidebarItem icon={<Home size={30} />} text="Dépannages" />
-        <SidebarItem icon={<BarChart size={39} />} text="Stats" />
-      </Sidebar>
+    <Routes>
+      {/* Auth routes sans sidebar */}
+      <Route
+        path="/signup"
+        element={
+          <AuthLayout>
+            <SignupPage />
+          </AuthLayout>
+        }
+      />
+      <Route
+        path="/login"
+        element={
+          <AuthLayout>
+            <LoginPage />
+          </AuthLayout>
+        }
+      />
 
-      {/* Example content area */}
-     
-    </div>
-  )
+      {/* Pages après auth avec sidebar */}
+      <Route
+        path="/depanage"
+        element={
+          <MainLayout>
+            <DepanagePage />
+          </MainLayout>
+        }
+      />
+
+      {/* Redirection par défaut */}
+      <Route path="/" element={<Navigate to="/signup" replace />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;

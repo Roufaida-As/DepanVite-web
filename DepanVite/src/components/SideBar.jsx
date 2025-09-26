@@ -29,7 +29,7 @@ export default function Sidebar({ children }) {
           />
           <button
             onClick={() => setExpanded((curr) => !curr)}
-            className="p-1.5 rounded-lg hover:bg-[#FFC120] transition-colors"
+            className="p-1.5 rounded-lg hover:bg-black hover:text-white transition-colors"
           >
             {expanded ? (
               <ChevronFirst className="text-[#FFC120]" />
@@ -46,7 +46,7 @@ export default function Sidebar({ children }) {
 
         {/* 🔹 Profile block at bottom */}
         <div
-          className="border-t relative flex items-center p-3 hover:bg-[#FFC120] rounded-lg cursor-pointer transition-colors"
+          className="border-t relative flex items-center p-3 hover:bg-black hover:text-white rounded-lg cursor-pointer transition-colors"
           onClick={() => setShowMenu((prev) => !prev)}
         >
           <img
@@ -70,10 +70,10 @@ export default function Sidebar({ children }) {
           {showMenu && expanded && (
             <div className="absolute bottom-14 left-3 w-48 bg-white border shadow-md rounded-lg">
               <ul>
-                <li className="px-4 py-2 hover:bg-[#FFC120] cursor-pointer">
+                <li className="px-4 py-2 hover:bg-black hover:text-white cursor-pointer">
                   Profile
                 </li>
-                <li className="px-4 py-2 hover:bg-[#FFC120] cursor-pointer">
+                <li className="px-4 py-2 hover:bg-black hover:text-white cursor-pointer">
                   Logout
                 </li>
               </ul>
@@ -97,7 +97,7 @@ export function SidebarItem({ icon, text, active, alert }) {
         ${
           active
             ? "bg-gradient-to-tr from-[#FFD666] to-[#FFC120] text-black"
-            : "hover:bg-[#FFC120] hover:text-black text-gray-600"
+            : "hover:bg-black hover:text-white text-gray-600"
         }
     `}
     >
