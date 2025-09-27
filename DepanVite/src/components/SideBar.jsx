@@ -97,7 +97,7 @@ export function SidebarItem({ icon, text, active, alert }) {
         ${
           active
             ? "bg-gradient-to-tr from-[#FFD666] to-[#FFC120] text-black"
-            : "hover:bg-black hover:text-white text-gray-600"
+            : "hover:bg-[#FFC120] hover:text-black text-gray-600"
         }
     `}
     >
