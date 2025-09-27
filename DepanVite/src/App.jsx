@@ -5,7 +5,8 @@ import DepanagePage from './pages/DepanagePage';
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
 import DepanneurPage from './pages/DepanneurPage';
-import AssurePage from './pages/AssurePage'
+import AssurePage from './pages/AssurePage' ;
+import StatePage from './pages/StatesPage'
 
 function App() {
   return (
@@ -52,6 +53,15 @@ function App() {
         element={
           <MainLayout>
             <AssurePage />
+          </MainLayout>
+        }
+      />
+
+       <Route
+        path="/stats"
+        element={
+          <MainLayout>
+            <StatePage />
           </MainLayout>
         }
       />
