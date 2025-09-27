@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Button from "../components/Button";
 import SearchBar from "../components/SearchBar";
 import SideDrawerForm from "../components/SideDrawerForm";
@@ -17,6 +17,8 @@ import {
   Settings,
   Tag,
   Package,
+  FileWarning,
+  FileSpreadsheet,
 } from "lucide-react";
 
 type Depanneur = {
@@ -39,6 +41,66 @@ export default function DepanneurPage() {
   const initialDepanneurs: Depanneur[] = [
     {
       id: 1,
+      nom: "Belaid",
+      prenom: "Meriem",
+      phone: "0550 123 456",
+      adresse: "Alger, Hydra",
+      matricule: "123-45-67",
+      permis: "B1234567",
+      specialisation: "Remorquage poids lourds",
+      marque: "Mercedes",
+      modele: "Actros",
+      capacite: "20T",
+      icon: <Truck className="text-[#FFC120]" size={28} />,
+      actif: true,
+    },
+    {
+      id: 2,
+      nom: "Maamar",
+      prenom: "Rofieda",
+      phone: "0551 987 654",
+      adresse: "Oran, Es-Senia",
+      matricule: "987-65-43",
+      permis: "C7654321",
+      specialisation: "Assistance rapide",
+      marque: "Renault",
+      modele: "Midlum",
+      capacite: "10T",
+      icon: <Wrench className="text-[#FFC120]" size={28} />,
+      actif: false,
+    },
+    {
+      id: 1,
+      nom: "Asbar",
+      prenom: "Roufaida",
+      phone: "0550 123 456",
+      adresse: "Alger, Hydra",
+      matricule: "123-45-67",
+      permis: "B1234567",
+      specialisation: "Remorquage poids lourds",
+      marque: "Mercedes",
+      modele: "Actros",
+      capacite: "20T",
+      icon: <Truck className="text-[#FFC120]" size={28} />,
+      actif: true,
+    },
+    {
+      id: 2,
+      nom: "bachferrag",
+      prenom: "Bouchra",
+      phone: "0551 987 654",
+      adresse: "Oran, Es-Senia",
+      matricule: "987-65-43",
+      permis: "C7654321",
+      specialisation: "Assistance rapide",
+      marque: "Renault",
+      modele: "Midlum",
+      capacite: "10T",
+      icon: <Wrench className="text-[#FFC120]" size={28} />,
+      actif: false,
+    },
+    {
+      id: 1,
       nom: "Benali",
       prenom: "Karim",
       phone: "0550 123 456",
@@ -54,7 +116,7 @@ export default function DepanneurPage() {
     },
     {
       id: 2,
-      nom: "Maamar",
+      nom: "dodo",
       prenom: "Rachid",
       phone: "0551 987 654",
       adresse: "Oran, Es-Senia",
@@ -67,46 +129,25 @@ export default function DepanneurPage() {
       icon: <Wrench className="text-[#FFC120]" size={28} />,
       actif: false,
     },
-    {
-      id: 3,
-      nom: "Touati",
-      prenom: "Sofiane",
-      phone: "0552 456 789",
-      adresse: "Constantine, Ali Mendjeli",
-      matricule: "456-78-90",
-      permis: "D4567890",
-      specialisation: "Remorquage urbain",
-      marque: "Iveco",
-      modele: "Eurocargo",
-      capacite: "12T",
-      icon: <Car className="text-[#FFC120]" size={28} />,
-      actif: true,
-    },
-    {
-      id: 4,
-      nom: "Ziani",
-      prenom: "Amine",
-      phone: "0553 654 321",
-      adresse: "Blida, Boufarik",
-      matricule: "321-54-76",
-      permis: "E7654321",
-      specialisation: "Dépannage autoroute",
-      marque: "Volvo",
-      modele: "FH16",
-      capacite: "25T",
-      icon: <AlertCircle className="text-[#FFC120]" size={28} />,
-      actif: false,
-    },
   ];
 
   const [depanneurs, setDepanneurs] = useState<Depanneur[]>(initialDepanneurs);
   const [currentPage, setCurrentPage] = useState(1);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // controlled input value in parent (keeps SearchBar in sync)
+  // Search
   const [searchInput, setSearchInput] = useState("");
-  // active search term that will be applied when user submits (Enter/click)
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Popup state
+  const [popup, setPopup] = useState<{
+    open: boolean;
+    type: "excel" | "other";
+    message: string;
+  }>({ open: false, type: "other", message: "" });
+
+  // File input ref
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const itemsPerPage = 4;
 
@@ -139,51 +180,68 @@ export default function DepanneurPage() {
       icon: <Truck className="text-[#FFC120]" size={28} />,
       actif: true,
     };
-    // put new item at top of source list
     setDepanneurs((prev) => [newDep, ...prev]);
     setCurrentPage(1);
   };
 
-  // Called when SearchBar submits (Enter or button)
   const handleSearchSubmit = (term: string) => {
     setSearchTerm(term.trim());
     setCurrentPage(1);
   };
 
-  // Reorder depanneurs so the first match (if any) appears first.
-  // This keeps the rest in their original order.
   const reorderedDepanneurs = useMemo(() => {
     if (!searchTerm) return depanneurs;
     const lower = searchTerm.toLowerCase();
-
-    // find first element where nom or prenom contains the query
     const firstIndex = depanneurs.findIndex(
       (d) =>
         d.nom.toLowerCase().includes(lower) ||
         (d.prenom && d.prenom.toLowerCase().includes(lower))
     );
-
     if (firstIndex === -1) return depanneurs;
     const first = depanneurs[firstIndex];
     const others = depanneurs.filter((d) => d.id !== first.id);
     return [first, ...others];
   }, [depanneurs, searchTerm]);
 
-  const totalPages = Math.max(
-    1,
-    Math.ceil(reorderedDepanneurs.length / itemsPerPage)
-  );
+  const totalPages = Math.max(1, Math.ceil(reorderedDepanneurs.length / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentDepanneurs = reorderedDepanneurs.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+  const currentDepanneurs = reorderedDepanneurs.slice(startIndex, startIndex + itemsPerPage);
 
-  // toggle by id — safe after reordering
   const toggleActif = (id: number) => {
     setDepanneurs((prev) =>
       prev.map((d) => (d.id === id ? { ...d, actif: !d.actif } : d))
     );
+  };
+
+  // File Import Handlers
+  const handleFileImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const extension = file.name.split(".").pop()?.toLowerCase();
+
+    if (extension === "xlsx" || extension === "xls") {
+      setPopup({
+        open: true,
+        type: "excel",
+        message: `Excel file uploaded: ${file.name}`,
+      });
+    } else {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const content = event.target?.result;
+        setPopup({
+          open: true,
+          type: "other",
+          message: "Le fichier doit être au format Excel",
+        });
+      };
+      reader.readAsText(file);
+    }
   };
 
   return (
@@ -211,6 +269,14 @@ export default function DepanneurPage() {
           <Button
             buttonName="Importer"
             colors={["text-[#FFC120]", "border-[#FFC120]", "bg-white"]}
+            onClick={handleFileImportClick}
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept=".csv,.xlsx,.xls,.json,.txt"
+            className="hidden"
           />
         </div>
       </div>
@@ -222,13 +288,12 @@ export default function DepanneurPage() {
             key={d.id}
             className="border border-[#FFC120] rounded-lg p-4 shadow-sm flex flex-col justify-between"
           >
-            {/* Header with icon + name */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center space-x-3">
                 {d.icon}
                 <h2
                   className="text-xl font-bold text-[#FFC120] cursor-pointer"
-                  // optional: clicking a name will re-run the search and promote it to top
                   onClick={() => {
                     setSearchInput(d.nom);
                     handleSearchSubmit(d.nom);
@@ -237,8 +302,6 @@ export default function DepanneurPage() {
                   {d.nom} {d.prenom}
                 </h2>
               </div>
-
-              {/* Actif/ Inactif button */}
               <button
                 onClick={() => toggleActif(d.id)}
                 className={`px-3 py-1 rounded-md text-sm font-semibold border transition ${
@@ -266,8 +329,7 @@ export default function DepanneurPage() {
                 <IdCard size={16} className="text-[#FFC120]" /> {d.permis}
               </p>
               <p className="flex items-center gap-2">
-                <Settings size={16} className="text-[#FFC120]" />{" "}
-                {d.specialisation}
+                <Settings size={16} className="text-[#FFC120]" /> {d.specialisation}
               </p>
               <p className="flex items-center gap-2">
                 <Tag size={16} className="text-[#FFC120]" /> {d.marque}
@@ -283,7 +345,7 @@ export default function DepanneurPage() {
         ))}
       </div>
 
-      {/* Pagination controls */}
+      {/* Pagination */}
       <div className="flex justify-end mt-6 space-x-2">
         <button
           disabled={currentPage === 1}
@@ -292,7 +354,6 @@ export default function DepanneurPage() {
         >
           <ChevronLeft size={18} />
         </button>
-
         {Array.from({ length: totalPages }, (_, i) => (
           <button
             key={i}
@@ -306,7 +367,6 @@ export default function DepanneurPage() {
             {i + 1}
           </button>
         ))}
-
         <button
           disabled={currentPage === totalPages}
           onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
@@ -316,6 +376,7 @@ export default function DepanneurPage() {
         </button>
       </div>
 
+      {/* Side Drawer */}
       <SideDrawerForm
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
@@ -323,6 +384,35 @@ export default function DepanneurPage() {
         onSubmit={handleAddDepanneur}
         title="Ajouter un dépanneur"
       />
+
+      {/* === Popup Modal === */}
+      {popup.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-96 animate-fadeIn">
+            <div className="flex items-center space-x-3 mb-4">
+              {popup.type === "excel" ? (
+                <FileSpreadsheet size={36} className="text-green-500 flex-shrink-0" />
+              ) : (
+                <FileWarning size={36} className="text-yellow-500 flex-shrink-0" />
+              )}
+              <h2 className="text-xl font-semibold">
+                {popup.type === "excel" ? "Successfully uploaded" : "File Content"}
+              </h2>
+            </div>
+            <pre className="bg-gray-100 rounded-lg p-3 max-h-40 overflow-auto text-sm whitespace-pre-wrap">
+              {popup.message}
+            </pre>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setPopup({ ...popup, open: false })}
+                className="px-4 py-2 rounded-lg bg-[#FFC120] text-white hover:bg-yellow-500 transition"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

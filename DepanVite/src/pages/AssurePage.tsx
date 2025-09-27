@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from "react"; // 👈 add useRef
+import React, { useMemo, useRef, useState } from "react"; // 👈 useRef added
 import Button from "../components/Button.js";
 import SearchBar from "../components/SearchBar.js";
 import SideDrawerForm from "../components/SideDrawerForm.js";
@@ -17,6 +17,9 @@ import {
   Settings,
   Tag,
   Package,
+  FileWarning,
+  FileSpreadsheet,
+  CheckCircle,
 } from "lucide-react";
 
 type Depanneur = {
@@ -104,7 +107,6 @@ const initialAssuré: Depanneur[] = [
     icon: <Car className="text-[#FFC120]" size={28} />,
     actif: false,
   },
-
 ];
 
 export default function AssurePage() {
@@ -117,16 +119,56 @@ export default function AssurePage() {
   const itemsPerPage = 4;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  // Popup state
+  const [popup, setPopup] = useState<{
+    open: boolean;
+    type: "excel" | "other";
+    title: string;
+    message: string;
+  }>({ open: false, type: "other", title: "", message: "" });
+
   const handleImportClick = () => {
     fileInputRef.current?.click();
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      console.log("Imported file:", file);
-      // 👉 here we will parse Excel with xlsx library
+    if (!file) return;
+
+    const extension = file.name.split(".").pop()?.toLowerCase();
+
+    if (extension === "xlsx" || extension === "xls") {
+      setPopup({
+        open: true,
+        type: "excel",
+        title: "Import réussi",
+        message: `Fichier Excel importé : ${file.name}`,
+      });
+      // TODO: parse with xlsx if you want to add rows automatically
+    } else {
+      // Non-excel => show message about required format
+      setPopup({
+        open: true,
+        type: "other",
+        title: "Format non supporté",
+        message: "Le fichier doit être au format Excel",
+      });
+
+      // If you want to preview content of text/csv files instead, uncomment:
+      // const reader = new FileReader();
+      // reader.onload = (event) => {
+      //   setPopup({
+      //     open: true,
+      //     type: "other",
+      //     title: "Aperçu du fichier",
+      //     message: String(event.target?.result).slice(0, 2000), // limit length
+      //   });
+      // };
+      // reader.readAsText(file);
     }
+
+    // clear the input value so the same file can be selected again later
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleAddDepanneur = (data: Record<string, any>) => {
@@ -155,10 +197,11 @@ export default function AssurePage() {
 
   const filteredDepanneurs = useMemo(() => {
     if (!searchTerm) return depanneurs;
+    const lower = searchTerm.toLowerCase();
     return depanneurs.filter(
       (d) =>
-        d.nom.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (d.prenom && d.prenom.toLowerCase().includes(searchTerm.toLowerCase()))
+        d.nom.toLowerCase().includes(lower) ||
+        (d.prenom && d.prenom.toLowerCase().includes(lower))
     );
   }, [depanneurs, searchTerm]);
 
@@ -182,7 +225,7 @@ export default function AssurePage() {
       <div className="flex items-center">
         <div className="w-full max-w-md">
           <SearchBar
-            text="Dépanneur"
+            text="Assuré"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onSearch={handleSearchSubmit}
@@ -199,7 +242,14 @@ export default function AssurePage() {
           <Button
             buttonName="Importer"
             colors={["text-[#FFC120]", "border-[#FFC120]", "bg-white"]}
-            onClick={handleImportClick} //t
+            onClick={handleImportClick}
+          />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept=".csv,.xlsx,.xls,.json,.txt"
+            className="hidden"
           />
         </div>
       </div>
@@ -287,7 +337,7 @@ export default function AssurePage() {
       <div className="flex justify-end mt-6 space-x-2">
         <button
           disabled={currentPage === 1}
-          onClick={() => setCurrentPage((p) => p - 1)}
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
           className="p-2 border rounded disabled:opacity-50"
         >
           <ChevronLeft size={18} />
@@ -298,9 +348,7 @@ export default function AssurePage() {
             key={i}
             onClick={() => setCurrentPage(i + 1)}
             className={`px-3 py-1 border rounded ${
-              currentPage === i + 1
-                ? "bg-[#FFC120] text-white"
-                : "bg-white text-black hover:bg-gray-100"
+              currentPage === i + 1 ? "bg-[#FFC120] text-white" : "bg-white text-black hover:bg-gray-100"
             }`}
           >
             {i + 1}
@@ -309,7 +357,7 @@ export default function AssurePage() {
 
         <button
           disabled={currentPage === totalPages}
-          onClick={() => setCurrentPage((p) => p + 1)}
+          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
           className="p-2 border rounded disabled:opacity-50"
         >
           <ChevronRight size={18} />
@@ -324,6 +372,40 @@ export default function AssurePage() {
         onSubmit={handleAddDepanneur}
         title="Ajouter un Assuré"
       />
+
+      {/* === Popup Modal === */}
+      {popup.open && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-96 animate-fadeIn">
+            <div className="flex items-center space-x-3 mb-4">
+              {popup.type === "excel" ? (
+                <div className="flex items-center space-x-3">
+                  <CheckCircle size={36} className="text-green-500 flex-shrink-0" />
+                  <h2 className="text-xl font-semibold">{popup.title}</h2>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-3">
+                  <FileWarning size={36} className="text-yellow-500 flex-shrink-0" />
+                  <h2 className="text-xl font-semibold">{popup.title}</h2>
+                </div>
+              )}
+            </div>
+
+            <pre className="bg-gray-100 rounded-lg p-3 max-h-40 overflow-auto text-sm whitespace-pre-wrap">
+              {popup.message}
+            </pre>
+
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setPopup({ ...popup, open: false })}
+                className="px-4 py-2 rounded-lg bg-[#FFC120] text-white hover:bg-yellow-500 transition"
+              >
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
