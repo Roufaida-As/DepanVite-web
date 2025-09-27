@@ -4,6 +4,8 @@ import LoginPage from './pages/auth/LoginPage';
 import DepanagePage from './pages/DepanagePage';
 import AuthLayout from './layouts/AuthLayout';
 import MainLayout from './layouts/MainLayout';
+import DepanneurPage from './pages/DepanneurPage';
+import AssurePage from './pages/AssurePage'
 
 function App() {
   return (
@@ -32,6 +34,24 @@ function App() {
         element={
           <MainLayout>
             <DepanagePage />
+          </MainLayout>
+        }
+      />
+
+      <Route
+        path="/depanneur"
+        element={
+          <MainLayout>
+            <DepanneurPage />
+          </MainLayout>
+        }
+      />
+
+      <Route
+        path="/assure"
+        element={
+          <MainLayout>
+            <AssurePage />
           </MainLayout>
         }
       />
