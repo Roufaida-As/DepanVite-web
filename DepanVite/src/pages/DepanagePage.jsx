@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Search, X, Phone, MapPin, Car, User, Calendar, Clock } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Search, X, Phone, MapPin, Car, User, Calendar, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Données fictives pour démonstration
 const mockDepannages = [
@@ -62,24 +62,64 @@ const mockDepannages = [
   },
   {
     id: 4,
-    immatriculation: "789 EF 09",
-    chassis: "WDB9636131L123789",
-    marque: "Mercedes",
-    modele: "Sprinter",
-    typeVehicule: "Utilitaire",
-    dateDepannage: "2024-09-18",
-    heureDepannage: "16:45",
-    localisationPanne: "Blida",
-    localisationExacte: "Zone industrielle de Boufarik",
-    destination: "Atelier Mercedes, Alger",
-    kilometrage: 45,
-    depanneurNom: "Omar",
-    depanneurPrenom: "Khelifi",
-    depanneurMatricule: "76516",
-    depanneurTel: "0770456789",
-    commentaire: "Problème moteur, diagnostic nécessaire"
+    immatriculation: "234 GH 07",
+    chassis: "WDB9636131L123790",
+    marque: "Volkswagen",
+    modele: "Golf",
+    typeVehicule: "Berline",
+    dateDepannage: "2024-09-17",
+    heureDepannage: "11:20",
+    localisationPanne: "Oran",
+    localisationExacte: "Boulevard de la Révolution",
+    destination: "Garage Volkswagen, Oran",
+    kilometrage: 12,
+    depanneurNom: "Yacine",
+    depanneurPrenom: "Messaoud",
+    depanneurMatricule: "76517",
+    depanneurTel: "0550789123",
+    commentaire: "Problème de batterie"
+  },
+  {
+    id: 5,
+    immatriculation: "567 IJ 21",
+    chassis: "WDB9636131L123791",
+    marque: "Ford",
+    modele: "Focus",
+    typeVehicule: "Break",
+    dateDepannage: "2024-09-16",
+    heureDepannage: "08:30",
+    localisationPanne: "Tizi Ouzou",
+    localisationExacte: "Route nationale 12",
+    destination: "Garage Ford, Tizi Ouzou",
+    kilometrage: 28,
+    depanneurNom: "Smail",
+    depanneurPrenom: "Benaissa",
+    depanneurMatricule: "76518",
+    depanneurTel: "0661456789",
+    commentaire: "Surchauffe moteur"
+  },
+  {
+    id: 6,
+    immatriculation: "890 KL 35",
+    chassis: "WDB9636131L123792",
+    marque: "Hyundai",
+    modele: "i30",
+    typeVehicule: "Berline",
+    dateDepannage: "2024-09-15",
+    heureDepannage: "15:45",
+    localisationPanne: "Sétif",
+    localisationExacte: "Centre-ville, Place de l'Indépendance",
+    destination: "Garage Hyundai, Sétif",
+    kilometrage: 18,
+    depanneurNom: "Farid",
+    depanneurPrenom: "Boumediene",
+    depanneurMatricule: "76519",
+    depanneurTel: "0770123456",
+    commentaire: "Panne électrique"
   }
 ];
+
+const ITEMS_PER_PAGE = 3;
 
 const DepannagePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,104 +128,7 @@ const DepannagePage = () => {
   const [dateDebut, setDateDebut] = useState('');
   const [dateFin, setDateFin] = useState('');
   const [isSelectOpen, setIsSelectOpen] = useState(false);
-  const [sidebarWidth, setSidebarWidth] = useState(256); // 256px par défaut
-
-  // Debug: afficher la largeur détectée
-  useEffect(() => {
-    console.log('Largeur sidebar mise à jour:', sidebarWidth);
-  }, [sidebarWidth]);
-
-  // Détecter la largeur de la sidebar
-  useEffect(() => {
-    const detectSidebarWidth = () => {
-      // Chercher différents sélecteurs possibles pour la sidebar
-      const possibleSelectors = [
-        '.sidebar',
-        '.side-bar', 
-        '[class*="sidebar"]',
-        '[class*="side-bar"]',
-        'nav[class*="side"]',
-        'aside',
-        '[role="navigation"]',
-        '.layout-sidebar',
-        '.main-sidebar'
-      ];
-      
-      let sidebar = null;
-      for (const selector of possibleSelectors) {
-        sidebar = document.querySelector(selector);
-        if (sidebar) break;
-      }
-      
-      if (sidebar) {
-        const rect = sidebar.getBoundingClientRect();
-        const computedStyle = window.getComputedStyle(sidebar);
-        const actualWidth = rect.width;
-        
-        // Vérifier si la sidebar est visible
-        const isVisible = computedStyle.display !== 'none' && 
-                         computedStyle.visibility !== 'hidden' && 
-                         actualWidth > 0;
-        
-        if (isVisible) {
-          setSidebarWidth(actualWidth);
-          console.log('Sidebar détectée, largeur:', actualWidth);
-        } else {
-          setSidebarWidth(0);
-        }
-      } else {
-        // Si aucune sidebar trouvée, utiliser les breakpoints responsive
-        const width = window.innerWidth;
-        if (width < 640) setSidebarWidth(0);           // Mobile: pas de sidebar
-        else if (width < 768) setSidebarWidth(60);     // Tablet: sidebar très étroite  
-        else if (width < 1024) setSidebarWidth(80);    // Desktop small: sidebar étroite
-        else setSidebarWidth(256);                     // Desktop: sidebar complète
-        
-        console.log('Sidebar non trouvée, largeur estimée:', 
-          width < 640 ? 0 : width < 768 ? 60 : width < 1024 ? 80 : 256
-        );
-      }
-    };
-
-    // Détection initiale
-    detectSidebarWidth();
-    
-    // Écouter les redimensionnements
-    window.addEventListener('resize', detectSidebarWidth);
-    
-    // Observer les changements dans le DOM (pour les sidebars qui apparaissent/disparaissent)
-    const observer = new MutationObserver((mutations) => {
-      let shouldRecheck = false;
-      mutations.forEach((mutation) => {
-        if (mutation.type === 'attributes' || 
-            mutation.type === 'childList' || 
-            (mutation.target && mutation.target.classList && 
-             (mutation.target.classList.toString().includes('sidebar') ||
-              mutation.target.classList.toString().includes('side')))) {
-          shouldRecheck = true;
-        }
-      });
-      if (shouldRecheck) {
-        setTimeout(detectSidebarWidth, 50); // Délai réduit pour plus de réactivité
-      }
-    });
-    
-    observer.observe(document.body, { 
-      attributes: true, 
-      attributeFilter: ['class', 'style'],
-      childList: true,
-      subtree: true 
-    });
-
-    // Vérifier périodiquement (au cas où) - intervalle réduit
-    const interval = setInterval(detectSidebarWidth, 1000);
-
-    return () => {
-      window.removeEventListener('resize', detectSidebarWidth);
-      observer.disconnect();
-      clearInterval(interval);
-    };
-  }, []);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filterOptions = [
     { value: 'tous', label: 'Tous les champs' },
@@ -196,65 +139,85 @@ const DepannagePage = () => {
     { value: 'date', label: 'Date exacte' },
     { value: 'intervalle', label: 'Intervalle de dates' },
     { value: 'depanneur', label: 'Nom prénom dépanneur' },
+    { value: 'matricule_depanneur', label: 'Matricule dépanneur' },
     { value: 'localisation', label: 'Localisation de panne' },
     { value: 'destination', label: 'Destination' }
   ];
 
   const filteredDepannages = useMemo(() => {
-    if (!searchTerm && selectedFilter !== 'intervalle') return mockDepannages;
+    let filtered = mockDepannages;
 
-    return mockDepannages.filter(depannage => {
-      const searchLower = searchTerm.toLowerCase();
+    if (searchTerm || selectedFilter === 'intervalle') {
+      filtered = mockDepannages.filter(depannage => {
+        const searchLower = searchTerm.toLowerCase();
 
-      // Filtre par intervalle de dates
-      if (selectedFilter === 'intervalle' && dateDebut && dateFin) {
-        const depannageDate = new Date(depannage.dateDepannage);
-        const debut = new Date(dateDebut);
-        const fin = new Date(dateFin);
-        const isInInterval = depannageDate >= debut && depannageDate <= fin;
-        
-        if (!searchTerm) return isInInterval;
-        
-        // Si on a aussi un terme de recherche avec intervalle
-        const matchesSearch = depannage.immatriculation.toLowerCase().includes(searchLower) ||
-          depannage.chassis.toLowerCase().includes(searchLower) ||
-          depannage.marque.toLowerCase().includes(searchLower) ||
-          depannage.modele.toLowerCase().includes(searchLower) ||
-          `${depannage.depanneurPrenom} ${depannage.depanneurNom}`.toLowerCase().includes(searchLower) ||
-          depannage.localisationPanne.toLowerCase().includes(searchLower) ||
-          depannage.destination.toLowerCase().includes(searchLower);
-        
-        return isInInterval && matchesSearch;
-      }
+        // Filtre par intervalle de dates
+        if (selectedFilter === 'intervalle' && dateDebut && dateFin) {
+          const depannageDate = new Date(depannage.dateDepannage);
+          const debut = new Date(dateDebut);
+          const fin = new Date(dateFin);
+          const isInInterval = depannageDate >= debut && depannageDate <= fin;
+          
+          if (!searchTerm) return isInInterval;
+          
+          // Si on a aussi un terme de recherche avec intervalle
+          const matchesSearch = depannage.immatriculation.toLowerCase().includes(searchLower) ||
+            depannage.chassis.toLowerCase().includes(searchLower) ||
+            depannage.marque.toLowerCase().includes(searchLower) ||
+            depannage.modele.toLowerCase().includes(searchLower) ||
+            `${depannage.depanneurPrenom} ${depannage.depanneurNom}`.toLowerCase().includes(searchLower) ||
+            depannage.depanneurMatricule.toLowerCase().includes(searchLower) ||
+            depannage.localisationPanne.toLowerCase().includes(searchLower) ||
+            depannage.destination.toLowerCase().includes(searchLower);
+          
+          return isInInterval && matchesSearch;
+        }
 
-      switch (selectedFilter) {
-        case 'immatriculation':
-          return depannage.immatriculation.toLowerCase().includes(searchLower);
-        case 'chassis':
-          return depannage.chassis.toLowerCase().includes(searchLower);
-        case 'marque':
-          return depannage.marque.toLowerCase().includes(searchLower);
-        case 'modele':
-          return depannage.modele.toLowerCase().includes(searchLower);
-        case 'date':
-          return depannage.dateDepannage === searchTerm;
-        case 'depanneur':
-          return `${depannage.depanneurPrenom} ${depannage.depanneurNom}`.toLowerCase().includes(searchLower);
-        case 'localisation':
-          return depannage.localisationPanne.toLowerCase().includes(searchLower);
-        case 'destination':
-          return depannage.destination.toLowerCase().includes(searchLower);
-        default:
-          return depannage.immatriculation.toLowerCase().includes(searchLower) ||
-                 depannage.chassis.toLowerCase().includes(searchLower) ||
-                 depannage.marque.toLowerCase().includes(searchLower) ||
-                 depannage.modele.toLowerCase().includes(searchLower) ||
-                 `${depannage.depanneurPrenom} ${depannage.depanneurNom}`.toLowerCase().includes(searchLower) ||
-                 depannage.localisationPanne.toLowerCase().includes(searchLower) ||
-                 depannage.destination.toLowerCase().includes(searchLower);
-      }
-    });
-  }, [searchTerm, selectedFilter, dateDebut, dateFin]);
+        switch (selectedFilter) {
+          case 'immatriculation':
+            return depannage.immatriculation.toLowerCase().includes(searchLower);
+          case 'chassis':
+            return depannage.chassis.toLowerCase().includes(searchLower);
+          case 'marque':
+            return depannage.marque.toLowerCase().includes(searchLower);
+          case 'modele':
+            return depannage.modele.toLowerCase().includes(searchLower);
+          case 'date':
+            return depannage.dateDepannage === searchTerm;
+          case 'depanneur':
+            return `${depannage.depanneurPrenom} ${depannage.depanneurNom}`.toLowerCase().includes(searchLower);
+          case 'matricule_depanneur':
+            return depannage.depanneurMatricule.toLowerCase().includes(searchLower);
+          case 'localisation':
+            return depannage.localisationPanne.toLowerCase().includes(searchLower);
+          case 'destination':
+            return depannage.destination.toLowerCase().includes(searchLower);
+          default:
+            return depannage.immatriculation.toLowerCase().includes(searchLower) ||
+                   depannage.chassis.toLowerCase().includes(searchLower) ||
+                   depannage.marque.toLowerCase().includes(searchLower) ||
+                   depannage.modele.toLowerCase().includes(searchLower) ||
+                   `${depannage.depanneurPrenom} ${depannage.depanneurNom}`.toLowerCase().includes(searchLower) ||
+                   depannage.depanneurMatricule.toLowerCase().includes(searchLower) ||
+                   depannage.localisationPanne.toLowerCase().includes(searchLower) ||
+                   depannage.destination.toLowerCase().includes(searchLower);
+        }
+      });
+    }
+
+    // Reset page when filter changes
+    if (currentPage > Math.ceil(filtered.length / ITEMS_PER_PAGE)) {
+      setCurrentPage(1);
+    }
+
+    return filtered;
+  }, [searchTerm, selectedFilter, dateDebut, dateFin, currentPage]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredDepannages.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentDepannages = filteredDepannages.slice(startIndex, endIndex);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -268,21 +231,82 @@ const DepannagePage = () => {
     window.open(`tel:${numero}`, '_self');
   };
 
-  return (
-    <div className="min-h-screen bg-white" style={{fontFamily: 'Poppins, sans-serif'}}>
-      <div 
-        className="transition-all duration-8 ease-out overflow-x-hidden"
+  const goToPage = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderPaginationButtons = () => {
+    const buttons = [];
+    const maxVisiblePages = 3;
+    
+    // Bouton précédent
+    buttons.push(
+      <button
+        key="prev"
+        onClick={() => goToPage(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="flex items-center justify-center w-10 h-10 border rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         style={{
-          marginLeft: `${sidebarWidth}px`,
-          width: `calc(100vw - ${sidebarWidth}px - 48px)`, // -48px pour le padding (24px * 2)
-          padding: '24px',
-          minHeight: '100vh',
-          transform: 'translateZ(0)', // Force hardware acceleration
-          willChange: 'margin-left, width', // Optimisation GPU
-          fontFamily: 'Poppins, sans-serif',
-          maxWidth: `calc(100vw - ${sidebarWidth}px - 48px)` // Empêcher le débordement
+          borderColor: '#FFC120',
+          backgroundColor: 'white',
+          color: '#11141A'
         }}
       >
+        <ChevronLeft className="w-5 h-5" />
+      </button>
+    );
+
+    // Pages
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => goToPage(i)}
+          className="w-10 h-10 border rounded-lg transition-colors font-medium"
+          style={{
+            borderColor: '#FFC120',
+            backgroundColor: currentPage === i ? '#FFC120' : 'white',
+            color: currentPage === i ? 'white' : '#11141A',
+            fontFamily: 'Poppins, sans-serif'
+          }}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    // Bouton suivant
+    buttons.push(
+      <button
+        key="next"
+        onClick={() => goToPage(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="flex items-center justify-center w-10 h-10 border rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{
+          borderColor: '#FFC120',
+          backgroundColor: 'white',
+          color: '#11141A'
+        }}
+      >
+        <ChevronRight className="w-5 h-5" />
+      </button>
+    );
+
+    return buttons;
+  };
+
+  return (
+    <div className="min-h-screen bg-white w-full" style={{fontFamily: 'Poppins, sans-serif'}}>
+      <div className="w-full px-4 md:px-6">
         {/* Header avec filtres */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-6" style={{color: '#11141A', fontFamily: 'Poppins, sans-serif'}}>
@@ -290,7 +314,7 @@ const DepannagePage = () => {
           </h1>
           
           {/* Zone de filtrage */}
-          <div className="bg-white rounded-lg shadow-md p-4 mb-6 w-full box-border" style={{border: '1px solid #ffc120', maxWidth: '100%'}}>
+          <div className="bg-white rounded-lg shadow-md p-4 mb-6 w-full" style={{border: '1px solid #ffc120'}}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {/* Sélecteur de filtre personnalisé */}
               <div>
@@ -326,6 +350,7 @@ const DepannagePage = () => {
                           onClick={() => {
                             setSelectedFilter(option.value);
                             setIsSelectOpen(false);
+                            setCurrentPage(1); // Reset to first page when filter changes
                           }}
                           className="w-full text-left px-3 py-2 hover:text-white transition-colors"
                           style={{
@@ -365,7 +390,10 @@ const DepannagePage = () => {
                     <input
                       type={selectedFilter === 'date' ? 'date' : 'text'}
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => {
+                        setSearchTerm(e.target.value);
+                        setCurrentPage(1); // Reset to first page when search changes
+                      }}
                       placeholder={
                         selectedFilter === 'date' ? '' :
                         selectedFilter === 'tous' ? 'Rechercher dans tous les champs...' :
@@ -391,7 +419,10 @@ const DepannagePage = () => {
                     <input
                       type="date"
                       value={dateDebut}
-                      onChange={(e) => setDateDebut(e.target.value)}
+                      onChange={(e) => {
+                        setDateDebut(e.target.value);
+                        setCurrentPage(1); // Reset to first page when date changes
+                      }}
                       className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2"
                       style={{
                         borderColor: '#FFC120', 
@@ -406,7 +437,10 @@ const DepannagePage = () => {
                     <input
                       type="date"
                       value={dateFin}
-                      onChange={(e) => setDateFin(e.target.value)}
+                      onChange={(e) => {
+                        setDateFin(e.target.value);
+                        setCurrentPage(1); // Reset to first page when date changes
+                      }}
                       className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2"
                       style={{
                         borderColor: '#FFC120', 
@@ -426,16 +460,15 @@ const DepannagePage = () => {
 
         {/* Liste des dépannages */}
         <div className="space-y-4">
-          {filteredDepannages.map(depannage => (
+          {currentDepannages.map(depannage => (
             <div
               key={depannage.id}
               onClick={() => setSelectedDepannage(depannage)}
-              className="bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow border-l-4 w-full box-border"
+              className="bg-white rounded-lg shadow-md p-4 cursor-pointer hover:shadow-lg transition-shadow border-l-4 w-full"
               style={{
                 borderLeftColor: '#FFC120', 
                 fontFamily: 'Poppins, sans-serif', 
-                border: '1px solid #ffc120', 
-                maxWidth: '100%'
+                border: '1px solid #ffc120'
               }}
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -475,6 +508,15 @@ const DepannagePage = () => {
           <div className="text-center py-12">
             <div className="text-gray-500 text-lg" style={{fontFamily: 'Poppins, sans-serif'}}>
               Aucun dépannage trouvé avec les critères de recherche actuels
+            </div>
+          </div>
+        )}
+
+        {/* Pagination - At the end of the list */}
+        {filteredDepannages.length > 0 && totalPages > 1 && (
+          <div className="flex justify-end mt-8 mb-8">
+            <div className="flex items-center space-x-2 bg-white rounded-lg shadow-lg p-2" style={{border: '1px solid #FFC120'}}>
+              {renderPaginationButtons()}
             </div>
           </div>
         )}

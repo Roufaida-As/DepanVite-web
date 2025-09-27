@@ -10,87 +10,83 @@ export default function Sidebar({ children }) {
   const [showMenu, setShowMenu] = useState(false);
 
   return (
-    <div className="flex">
-      <aside
-        className={`h-screen bg-white border-r shadow-sm transition-all duration-300 ${
-          expanded ? "w-64" : "w-16"
+    <aside
+      className={`bg-white border-r shadow-sm transition-all duration-300 flex flex-col ${
+        expanded ? "w-64" : "w-16"
+      }`}
+    >
+      {/* Logo + toggle button */}
+      <div
+        className={`p-4 pb-2 flex items-center transition-all duration-300 ${
+          expanded ? "justify-between" : "justify-center"
         }`}
       >
-        <nav className="h-full flex flex-col">
-          {/* 🔹 Logo + toggle button */}
-          <div
-            className={`p-4 pb-2 flex items-center transition-all duration-300 ${
-              expanded ? "justify-between" : "justify-center"
-            }`}
-          >
-            <img
-              src={logo}
-              className={`overflow-hidden transition-all ${
-                expanded ? "w-32" : "w-0"
-              }`}
-              alt="logo"
-            />
-            <button
-              onClick={() => setExpanded((curr) => !curr)}
-              className="p-1.5 rounded-lg hover:bg-black hover:text-white transition-colors"
-            >
-              {expanded ? (
-                <ChevronFirst className="text-[#FFC120]" />
-              ) : (
-                <ChevronLast className="text-[#FFC120]" />
-              )}
-            </button>
+        <img
+          src={logo}
+          className={`overflow-hidden transition-all ${
+            expanded ? "w-32" : "w-0"
+          }`}
+          alt="logo"
+        />
+        <button
+          onClick={() => setExpanded((curr) => !curr)}
+          className="p-1.5 rounded-lg hover:bg-black hover:text-white transition-colors"
+        >
+          {expanded ? (
+            <ChevronFirst className="text-[#FFC120]" />
+          ) : (
+            <ChevronLast className="text-[#FFC120]" />
+          )}
+        </button>
+      </div>
+
+      {/* Menu items */}
+      <SidebarContext.Provider value={{ expanded }}>
+        <ul className="flex-1 px-3 pt-10 space-y-3">{children}</ul>
+      </SidebarContext.Provider>
+
+      {/* Profile block at bottom */}
+      <div
+        className="border-t relative flex items-center p-3 hover:bg-[#FFC120] hover:text-black rounded-lg cursor-pointer transition-colors"
+        onClick={() => setShowMenu((prev) => !prev)}
+      >
+        <img
+          src="https://ui-avatars.com/api/?background=FFC120&color=000000&bold=true"
+          alt="user avatar"
+          className="w-10 h-10 rounded-md"
+        />
+
+        {/* Text + Icon (expandable) */}
+        <div
+          className={`flex justify-between items-center ml-3 transition-all duration-300 ${
+            expanded ? "w-48 opacity-100" : "w-0 opacity-0"
+          }`}
+        >
+          <div className="leading-4">
+            <h4 className="font-semibold text-black">MR</h4>
+            {/* Truncate long emails */}
+            <span className="text-xs text-gray-800 block truncate w-40">
+              mr_maamar@esi.dz
+            </span>
           </div>
+          <MoreVertical size={20} className="text-[#FFC120]" />
+        </div>
 
-          {/* 🔹 Menu items */}
-          <SidebarContext.Provider value={{ expanded }}>
-            <ul className="flex-1 px-3 pt-10 space-y-3">{children}</ul>
-          </SidebarContext.Provider>
-
-          {/* 🔹 Profile block at bottom */}
-          <div
-            className="border-t relative flex items-center p-3 hover:bg-[#FFC120] hover:text-black rounded-lg cursor-pointer transition-colors"
-            onClick={() => setShowMenu((prev) => !prev)}
-          >
-            <img
-              src="https://ui-avatars.com/api/?background=FFC120&color=000000&bold=true"
-              alt="user avatar"
-              className="w-10 h-10 rounded-md"
-            />
-
-            {/* Text + Icon (expandable) */}
-            <div
-              className={`flex justify-between items-center ml-3 transition-all duration-300 ${
-                expanded ? "w-48 opacity-100" : "w-0 opacity-0"
-              }`}
-            >
-              <div className="leading-4">
-                <h4 className="font-semibold text-black">MR</h4>
-                {/* Truncate long emails */}
-                <span className="text-xs text-gray-800 block truncate w-40">
-                  mr_maamar@esi.dz
-                </span>
-              </div>
-              <MoreVertical size={20} className="text-[#FFC120]" />
-            </div>
-
-            {/* 🔹 Dropdown menu */}
-            {showMenu && expanded && (
-              <div className="absolute bottom-14 right-3 w-48 bg-white border shadow-md rounded-lg z-50">
-                <ul>
-                  <li className="px-4 py-2 hover:bg-[#FFC120] hover:text-black cursor-pointer">
-                    Profile
-                  </li>
-                  <li className="px-4 py-2 hover:bg-[#FFC120] hover:text-black cursor-pointer">
-                    Logout
-                  </li>
-                </ul>
-              </div>
-            )}
+        {/* Dropdown menu */}
+        {showMenu && expanded && (
+          <div className="absolute bottom-14 right-3 w-48 bg-white border shadow-md rounded-lg z-50">
+            <ul>
+              <li className="px-4 py-2 hover:bg-[#FFC120] hover:text-black cursor-pointer">
+                Profile
+              </li>
+              <li className="px-4 py-2 hover:bg-[#FFC120] hover:text-black cursor-pointer">
+                Logout
+              </li>
+            </ul>
           </div>
-        </nav>
-      </aside>
-    </div>
+        )}
+      </div>
+    </aside>
   );
 }
 

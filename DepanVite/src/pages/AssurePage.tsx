@@ -107,6 +107,20 @@ const initialAssuré: Depanneur[] = [
     icon: <Car className="text-[#FFC120]" size={28} />,
     actif: false,
   },
+  {
+    id: 5,
+    nom: "Ziani",
+    prenom: "Amine",
+    phone: "0553 654 321",
+    adresse: "Blida, Boufarik",
+    matricule: "321-54-76",
+    permis: "CH7654321",
+    specialisation: "Volkswagen",
+    marque: "Golf 8",
+    modele: "Compacte",
+    icon: <Car className="text-[#FFC120]" size={28} />,
+    actif: false,
+  },
 ];
 
 export default function AssurePage() {

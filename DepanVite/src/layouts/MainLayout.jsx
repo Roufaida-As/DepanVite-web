@@ -5,7 +5,7 @@ import { Wrench, Users, Home, BarChart } from 'lucide-react';
 
 export default function MainLayout({ children }) {
   return (
-    <div className="flex h-screen w-screen">
+    <div className="flex min-h-screen w-screen">
       <Sidebar>
         <SidebarItem icon={<Wrench size={30} />} text="Dépanneurs" to="/depanneur" />
         <SidebarItem icon={<Users size={30} />} text="Assurés" to="/assure"  />
