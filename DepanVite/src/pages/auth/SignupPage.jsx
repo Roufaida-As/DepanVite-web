@@ -31,12 +31,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4" style={{ fontFamily: 'Poppins, sans-serif' }}>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 pt-63" style={{ fontFamily: 'Poppins, sans-serif', backgroundColor: '#f9fafb', minHeight: '100vh' }}>
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
         {/* Logo and Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <img src={depanneuse1} alt="DepanVite logo" className="w-13 h-13 mr-3 object-contain" />
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center mb-3">
+            <img src={depanneuse1} alt="DepanVite logo" className="w-8 h-8 mr-3 object-contain" />
             <h1 className="text-2xl font-bold">
               <span className="font-bold" style={{ color: '#000000' }}>D</span>
               <span className="font-bold" style={{ color: '#FFC120' }}>e</span>
@@ -50,13 +50,13 @@ export default function SignupPage() {
             </h1>
           </div>
           
-          <p className="text-gray-600 text-sm mb-2">
-            Plateforme de dépannage automobile
-          </p>
-          
           <h2 className="text-xl font-semibold mb-2" style={{ color: '#000000' }}>
             Rejoignez notre réseau
           </h2>
+          
+          <p className="text-gray-600 text-sm mb-2">
+            Plateforme de dépannage automobile
+          </p>
           
           <p className="text-gray-600 text-sm">
             Inscrivez votre compagnie d'assurance et offrez un service de dépannage premium à vos clients
@@ -157,16 +157,18 @@ export default function SignupPage() {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full py-3 rounded-lg font-semibold text-sm transition-all duration-200 hover:shadow-lg transform hover:scale-[1.02]"
-            style={{ 
-              backgroundColor: '#FFC120',
-              color: '#000000'
-            }}
-          >
-            CRÉER MON COMPTE
-          </button>
+          <div className="mt-8">
+            <button
+              type="submit"
+              className="w-full py-3 rounded-lg font-semibold text-sm transition-all duration-200 hover:shadow-lg transform hover:scale-[1.02]"
+              style={{ 
+                backgroundColor: '#FFC120',
+                color: '#000000'
+              }}
+            >
+              CRÉER MON COMPTE
+            </button>
+          </div>
 
           {/* Divider */}
           <div className="relative my-6">
