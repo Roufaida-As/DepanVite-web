@@ -1,6 +1,6 @@
 import { MoreVertical, ChevronLast, ChevronFirst } from "lucide-react";
 import { useContext, createContext, useState } from "react";
-import logo from "../assets/logo.svg";
+import logo from "../assets/logo1.png";
 import { NavLink } from "react-router-dom";
 
 const SidebarContext = createContext();
@@ -24,7 +24,7 @@ export default function Sidebar({ children }) {
         <img
           src={logo}
           className={`overflow-hidden transition-all ${
-            expanded ? "w-32" : "w-0"
+            expanded ? "w-40 h-40" : "w-0"
           }`}
           alt="logo"
         />

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock } from 'lucide-react';
-import depanneuse1 from '../../assets/depanneuse 1.svg';
+import logo1 from '../../assets/logo1.png';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -34,18 +34,8 @@ export default function LoginPage() {
         {/* Logo and Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <img src={depanneuse1} alt="DepanVite logo" className="w-8 h-8 mr-3 object-contain" />
-            <h1 className="text-2xl font-bold">
-              <span className="font-bold" style={{ color: '#000000' }}>D</span>
-              <span className="font-bold" style={{ color: '#FFC120' }}>e</span>
-              <span className="font-bold" style={{ color: '#FFC120' }}>p</span>
-              <span className="font-bold" style={{ color: '#FFC120' }}>a</span>
-              <span className="font-bold" style={{ color: '#FFC120' }}>n</span>
-              <span className="font-bold" style={{ color: '#000000' }}>V</span>
-              <span className="font-bold" style={{ color: '#FFC120' }}>i</span>
-              <span className="font-bold" style={{ color: '#FFC120' }}>t</span>
-              <span className="font-bold" style={{ color: '#FFC120' }}>e</span>
-            </h1>
+            <img src={logo1} alt="DepanVite logo" className="mr-3 object-contain" />
+            
           </div>
 
           <h2 className="text-xl font-semibold mb-2" style={{ color: '#000000' }}>
