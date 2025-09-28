@@ -15,7 +15,7 @@ import { Truck, Users, Calendar, Activity } from "lucide-react";
 
 // State / Stats page
 // - Mock data for depanneurs, assurés and depannage events
-// - Calculates: number of depanneurs, depannages (weekly/monthly),
+// - Calculates: number of depanneurs, depannages (weekly/par mois),
 //   growth of assurés this year, percentage of assurés that needed depannage,
 //   busiest month
 // - Uses Tailwind + primary color #FFC120
@@ -110,7 +110,7 @@ export default function StatePage() {
   // --- Stats calculations ---
   const totalDepanneurs = depanneurs.length;
 
-  // weekly / monthly depannage counts (simple approximation)
+  // weekly / par mois depannage counts (simple approximation)
   // weekly: sum of last 30 days divided by 4 ~ rough weekly; we'll compute last 7 days from events
   const today = new Date();
   const sevenDaysAgo = new Date();
@@ -119,7 +119,7 @@ export default function StatePage() {
   const eventsLast7Days = events.filter((ev) => new Date(ev.date) >= sevenDaysAgo);
   const depannagesWeekly = eventsLast7Days.length;
 
-  // monthly: events in current month
+  // par mois: events in current month
   const currentMonthStr = `${currentYear}-${String(today.getMonth() + 1).padStart(2, "0")}`;
   const depannagesThisMonth = events.filter((ev) => ev.date.startsWith(currentMonthStr)).length;
 
@@ -147,7 +147,7 @@ export default function StatePage() {
   }));
 
   // UI state: toggle weekly vs monthly chart
-  const [mode, setMode] = useState<"monthly" | "weekly">("monthly");
+  const [mode, setMode] = useState<"par mois" | "par semaine">("par mois");
 
   return (
     <div className="p-6">
@@ -155,16 +155,16 @@ export default function StatePage() {
         <h1 className="text-3xl font-bold-text">Statistiques</h1>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => setMode("weekly")}
-            className={`px-3 py-1 rounded-md border ${mode === "weekly" ? "bg-[#FFC120] text-white" : "bg-white"}`}
+            onClick={() => setMode("par semaine")}
+            className={`px-3 py-1 rounded-md border ${mode === "par semaine" ? "bg-[#FFC120] text-white" : "bg-white"}`}
           >
-            Weekly
+            par semaine
           </button>
           <button
-            onClick={() => setMode("monthly")}
-            className={`px-3 py-1 rounded-md border ${mode === "monthly" ? "bg-[#FFC120] text-white" : "bg-white"}`}
+            onClick={() => setMode("par mois")}
+            className={`px-3 py-1 rounded-md border ${mode === "par mois" ? "bg-[#FFC120] text-white" : "bg-white"}`}
           >
-            Monthly
+            par mois
           </button>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function StatePage() {
             <Activity size={28} className="text-[#FFC120]" />
           </div>
           <div>
-            <div className="text-sm text-gray-500">Dépannages (weekly)</div>
+            <div className="text-sm text-gray-500">Dépannages (par semaine)</div>
             <div className="text-2xl font-bold">{depannagesWeekly}</div>
             <div className="text-xs text-gray-400">last 7 days</div>
           </div>
@@ -197,7 +197,7 @@ export default function StatePage() {
             <Users size={28} className="text-[#FFC120]" />
           </div>
           <div>
-            <div className="text-sm text-gray-500">Assurés ajoutés (this year)</div>
+            <div className="text-sm text-gray-500">Assurés ajoutés (cette année)</div>
             <div className="text-2xl font-bold">{totalAssuresThisYear}</div>
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function StatePage() {
           <div>
             <div className="text-sm text-gray-500">% assurés ayant besoin dépannage</div>
             <div className="text-2xl font-bold">{percentAssuresNeedingDepannage}%</div>
-            <div className="text-xs text-gray-400">of added assurés this year</div>
+            <div className="text-xs text-gray-400">assurés ajoutés cette année</div>
           </div>
         </div>
       </div>
@@ -246,7 +246,7 @@ export default function StatePage() {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-3 text-sm text-gray-600">Total this year: <span className="font-semibold">{totalAssuresThisYear}</span></div>
+          <div className="mt-3 text-sm text-gray-600">Total de cette année: <span className="font-semibold">{totalAssuresThisYear}</span></div>
         </div>
       </div>
 
@@ -255,8 +255,8 @@ export default function StatePage() {
         <h4 className="font-semibold mb-2">Quick insights</h4>
         <ul className="text-sm text-gray-700 space-y-1">
           <li>• Total dépanneurs: <strong>{totalDepanneurs}</strong></li>
-          <li>• Dépannages this month: <strong>{depannagesThisMonth}</strong></li>
-          <li>• Increase d'assurés cette année: <strong>{totalAssuresThisYear}</strong></li>
+          <li>• Dépannages de ce mois: <strong>{depannagesThisMonth}</strong></li>
+          <li>• L'augmentation d'assurés cette année: <strong>{totalAssuresThisYear}</strong></li>
           <li>• Pourcentage d'assurés ayant eu besoin d'un dépannage: <strong>{percentAssuresNeedingDepannage}%</strong></li>
           <li>• Le mois le plus chargé: <strong>{monthName(busiestMonth.month)}</strong></li>
         </ul>

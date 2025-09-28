@@ -21,7 +21,7 @@ export default function LoginPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Login submit:', formData);
-    navigate('/depanage');
+    navigate('/depanneur');
   };
 
   const goToSignup = () => {
